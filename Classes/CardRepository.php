@@ -6,6 +6,18 @@
 class CardRepository
 {
     private DatabaseManager $databaseManager;
+    private string $type;
+    private string $description;
+
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
 
     // This class needs a database connection to function
     public function __construct(DatabaseManager $databaseManager)
@@ -15,13 +27,14 @@ class CardRepository
 
     public function create(): void
     {
-
+        $statementObj = $this->databaseManager->connection->prepare(("INSERT INTO cards (`type`, description) VALUES ('{$this->type}', '{$this->description}')"));
+        $statementObj->execute();
     }
 
     // Get one
     public function find(): array
     {
-
+        return [];
     }
 
     // Get all
@@ -31,13 +44,13 @@ class CardRepository
         // TODO: Use your database connection (see $databaseManager) and send your query to your database.
         // TODO: fetch your data at the end of that action.
         // TODO: replace dummy data by real one
-        return [
-            ['name' => 'dummy one'],
-            ['name' => 'dummy two'],
-        ];
 
         // We get the database connection first, so we can apply our queries with it
-        // return $this->databaseManager->connection-> (runYourQueryHere)
+        $statementObj = $this->databaseManager->connection->prepare(('SELECT * FROM cards'));
+        $statementObj->execute();
+
+        $statementObj->setFetchMode(PDO::FETCH_ASSOC);
+        return $statementObj->fetchAll();
     }
 
     public function update(): void

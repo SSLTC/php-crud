@@ -9,21 +9,15 @@
 </head>
 <body>
 
-<h1>Goodcard - track your collection of quartet cards</h1>
+<h1>Update card</h1>
 
 <form method="post" action="index.php?action=create">
     <label for="type">Type: </label>
     <input type="text" name="type" id="type"><br>
     <label for="description">Description: </label><br>
     <textarea id="description" name="description"></textarea><br>
-    <input type="submit" value="Add">
+    <input type="submit" value="Update">
 </form>
-
-<ul>
-    <?php foreach ($cards as $card) : ?>
-        <li><?= $card['type'] ?> - <?= $card['description'] ?></li>
-    <?php endforeach; ?>
-</ul>
 
 </body>
 </html>

@@ -16,10 +16,8 @@ require_once 'classes/CardRepository.php';
 $databaseManager = new DatabaseManager($config['host'], $config['user'], $config['password'], $config['dbname']);
 $databaseManager->connect();
 
-// This example is about a Pokémon card collection
-// Update the naming if you'd like to work with another collection
 $cardRepository = new CardRepository($databaseManager);
-$cards = $cardRepository->get();
+//$cards = $cardRepository->get();
 
 // Get the current action to execute
 // If nothing is specified, it will remain empty (home should be loaded)
@@ -40,26 +38,17 @@ function overview()
 {
     // Load your view
     // Tip: you can load this dynamically and based on a variable, if you want to load another view
+    $cards = $GLOBALS['cardRepository']->get();
     require 'overview.php';
 }
 
 function create()
 {
     // TODO: provide the create logic
+    global $cardRepository;
+    $cardRepository->setType($_POST['type']);
+    $cardRepository->setDescription($_POST['description']);
+    $cardRepository->create();
+    $cards = $cardRepository->get();
+    require 'overview.php';
 }
-Footer
-© 2023 GitHub, Inc.
-Footer navigation
-
-    Terms
-    Privacy
-    Security
-    Status
-    Docs
-    Contact GitHub
-    Pricing
-    API
-    Training
-    Blog
-    About
-
