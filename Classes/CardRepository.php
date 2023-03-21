@@ -9,19 +9,9 @@ class CardRepository
     private string $type;
     private string $description;
 
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
     public function setType(string $type): void
     {
         $this->type = $type;
-    }
-
-    public function getDescription(): string
-    {
-        return $this->description;
     }
 
     public function setDescription(string $description): void
@@ -37,14 +27,21 @@ class CardRepository
 
     public function create(): void
     {
-        $statementObj = $this->databaseManager->connection->prepare(("INSERT INTO cards (`type`, description) VALUES ('{$this->type}', '{$this->description}')"));
-        $statementObj->execute();
+        try {
+            $statementObj = $this->databaseManager->connection->prepare(("INSERT INTO cards (`type`, description) VALUES (:type, :description)"));
+            $statementObj->bindValue(':type', $this->type);
+            $statementObj->bindValue(':description', $this->description);
+            $statementObj->execute();
+        } catch(PDOException $e) {
+            echo "Insert failed: " . $e->getMessage();
+        }
     }
 
     // Get one
     public function find(int $id): array
     {
-        $statementObj = $this->databaseManager->connection->prepare(("SELECT * FROM cards WHERE ID = {$id}"));
+        $statementObj = $this->databaseManager->connection->prepare(("SELECT * FROM cards WHERE ID =:id"));
+        $statementObj->bindValue(':id', $id, PDO::PARAM_INT);
         $statementObj->execute();
 
         $statementObj->setFetchMode(PDO::FETCH_ASSOC);
@@ -69,14 +66,26 @@ class CardRepository
 
     public function update(int $id): void
     {
-        
-        $statementObj = $this->databaseManager->connection->prepare(("UPDATE cards SET `type`='{$this->type}', description='{$this->description}' WHERE ID={$id};"));
-        $statementObj->execute();
+        try {
+            $statementObj = $this->databaseManager->connection->prepare(("UPDATE cards SET `type`=:type, description=:description WHERE ID=:id;"));
+            $statementObj->bindValue(':id', $id, PDO::PARAM_INT);
+            $statementObj->bindValue(':type', $this->type, PDO::PARAM_STR);
+            $statementObj->bindValue(':description', $this->description, PDO::PARAM_STR);
+            $statementObj->execute();
+        } catch(PDOException $e) {
+            echo "Update failed: " . $e->getMessage();
+        }
     }
 
-    public function delete(): void
+    public function delete(int $id): void
     {
-
+        try {
+            $statementObj = $this->databaseManager->connection->prepare(("DELETE FROM cards WHERE ID=:id;"));
+            $statementObj->bindValue(':id', $id, PDO::PARAM_INT);
+            $statementObj->execute();
+        } catch(PDOException $e) {
+            echo "Delete failed: " . $e->getMessage();
+        }
     }
 
 }

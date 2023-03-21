@@ -14,9 +14,9 @@
 
     <form method="post" action="index.php?action=update&id=<?= $card['ID'] ?>">
         <label for="type">Type: </label>
-        <input type="text" name="type" id="type" value="<?= $card['type'] ?>"><br>
+        <input type="text" name="type" id="type" value="<?= htmlspecialchars($card['type']) ?>"><br>
         <label for="description">Description: </label><br>
-        <textarea id="description" name="description"><?= $card['description'] ?></textarea><br>
+        <textarea id="description" name="description"><?= htmlspecialchars($card['description']) ?></textarea><br>
         <input type="submit" class="btn btn-primary" value="Update">
     </form>
 </div>

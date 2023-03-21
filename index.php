@@ -13,6 +13,10 @@ require_once 'config.php';
 require_once 'classes/DatabaseManager.php';
 require_once 'classes/CardRepository.php';
 
+if (isset($_POST['cancel'])) { 
+    header('Location: .');
+}
+
 $databaseManager = new DatabaseManager($config['host'], $config['user'], $config['password'], $config['dbname']);
 $databaseManager->connect();
 
@@ -32,6 +36,12 @@ switch ($action) {
     case 'update':
         update();
         break;
+    case 'delete':
+        delete();
+        break;
+    case 'showForm':
+        showForm();
+        break;
     default:
         overview();
         break;
@@ -41,6 +51,7 @@ function overview()
 {
     // Load your view
     // Tip: you can load this dynamically and based on a variable, if you want to load another view
+    $showFormAddCard = false;
     $cards = $GLOBALS['cardRepository']->get();
     require 'overview.php';
 }
@@ -52,8 +63,7 @@ function create()
     $cardRepository->setType($_POST['type']);
     $cardRepository->setDescription($_POST['description']);
     $cardRepository->create();
-    $cards = $cardRepository->get();
-    require 'overview.php';
+    header('Location: .');
 }
 
 function update()
@@ -64,11 +74,22 @@ function update()
         $cardRepository->setType($_POST['type']);
         $cardRepository->setDescription($_POST['description']);
         $cardRepository->update((int)$_GET['id']);
-        $cards = $cardRepository->get();
-        require 'overview.php';
+        header('Location: .');
     } else {
         $card = $cardRepository->find((int)$_GET['id']);
         require 'edit.php';
     }
+}
 
+function delete()
+{
+    global $cardRepository;
+    $cardRepository->delete((int)$_GET['id']);
+    header('Location:.');
+}
+
+function showForm()
+{
+    $showFormAddCard = true;
+    require 'overview.php';
 }
