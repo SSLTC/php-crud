@@ -29,6 +29,9 @@ switch ($action) {
     case 'create':
         create();
         break;
+    case 'update':
+        update();
+        break;
     default:
         overview();
         break;
@@ -51,4 +54,21 @@ function create()
     $cardRepository->create();
     $cards = $cardRepository->get();
     require 'overview.php';
+}
+
+function update()
+{
+    // TODO: provide the update logic
+    global $cardRepository;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $cardRepository->setType($_POST['type']);
+        $cardRepository->setDescription($_POST['description']);
+        $cardRepository->update((int)$_GET['id']);
+        $cards = $cardRepository->get();
+        require 'overview.php';
+    } else {
+        $card = $cardRepository->find((int)$_GET['id']);
+        require 'edit.php';
+    }
+
 }

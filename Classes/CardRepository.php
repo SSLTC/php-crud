@@ -9,9 +9,19 @@ class CardRepository
     private string $type;
     private string $description;
 
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
     public function setType(string $type): void
     {
         $this->type = $type;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
     public function setDescription(string $description): void
@@ -32,9 +42,13 @@ class CardRepository
     }
 
     // Get one
-    public function find(): array
+    public function find(int $id): array
     {
-        return [];
+        $statementObj = $this->databaseManager->connection->prepare(("SELECT * FROM cards WHERE ID = {$id}"));
+        $statementObj->execute();
+
+        $statementObj->setFetchMode(PDO::FETCH_ASSOC);
+        return $statementObj->fetch();
     }
 
     // Get all
@@ -53,9 +67,11 @@ class CardRepository
         return $statementObj->fetchAll();
     }
 
-    public function update(): void
+    public function update(int $id): void
     {
-
+        
+        $statementObj = $this->databaseManager->connection->prepare(("UPDATE cards SET `type`='{$this->type}', description='{$this->description}' WHERE ID={$id};"));
+        $statementObj->execute();
     }
 
     public function delete(): void
