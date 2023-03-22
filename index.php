@@ -15,6 +15,7 @@ require_once 'classes/CardRepository.php';
 
 if (isset($_POST['cancel'])) { 
     header('Location: .');
+    exit;
 }
 
 $databaseManager = new DatabaseManager($config['host'], $config['user'], $config['password'], $config['dbname']);
@@ -71,6 +72,15 @@ function update()
     // TODO: provide the update logic
     global $cardRepository;
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!empty($_FILES["fileToUpload"]["name"])) {
+            require './uploads/upload.php';
+
+            if (!empty($errors)) {
+                require 'edit.php';
+                exit;
+            }
+        }
+
         $cardRepository->setType($_POST['type']);
         $cardRepository->setDescription($_POST['description']);
         $cardRepository->update((int)$_GET['id']);
