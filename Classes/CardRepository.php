@@ -28,7 +28,7 @@ class CardRepository
     public function create(): void
     {
         try {
-            $statementObj = $this->databaseManager->connection->prepare(("INSERT INTO cards (`type`, description) VALUES (:type, :description)"));
+            $statementObj = $this->databaseManager->connection->prepare("INSERT INTO cards (`type`, description) VALUES (:type, :description)");
             $statementObj->bindValue(':type', $this->type);
             $statementObj->bindValue(':description', $this->description);
             $statementObj->execute();
@@ -40,7 +40,7 @@ class CardRepository
     // Get one
     public function find(int $id): array
     {
-        $statementObj = $this->databaseManager->connection->prepare(("SELECT * FROM cards WHERE ID =:id"));
+        $statementObj = $this->databaseManager->connection->prepare("SELECT * FROM cards WHERE ID =:id");
         $statementObj->bindValue(':id', $id, PDO::PARAM_INT);
         $statementObj->execute();
 
@@ -49,7 +49,7 @@ class CardRepository
     }
 
     // Get all
-    public function get(): array
+    public function get(string $filter = null): array
     {
         // TODO: Create an SQL query
         // TODO: Use your database connection (see $databaseManager) and send your query to your database.
@@ -57,7 +57,12 @@ class CardRepository
         // TODO: replace dummy data by real one
 
         // We get the database connection first, so we can apply our queries with it
-        $statementObj = $this->databaseManager->connection->prepare(('SELECT * FROM cards WHERE deleted = 0'));
+        $query = match (gettype($filter)) {
+            'NULL' => 'SELECT * FROM cards WHERE deleted = 0',
+            'string' => "SELECT * FROM cards WHERE deleted = 0 AND `type` LIKE '%{$filter}%'"
+        };
+
+        $statementObj = $this->databaseManager->connection->prepare($query);
         $statementObj->execute();
 
         $statementObj->setFetchMode(PDO::FETCH_ASSOC);
@@ -67,7 +72,7 @@ class CardRepository
     public function update(int $id): void
     {
         try {
-            $statementObj = $this->databaseManager->connection->prepare(("UPDATE cards SET `type`=:type, description=:description WHERE ID=:id;"));
+            $statementObj = $this->databaseManager->connection->prepare("UPDATE cards SET `type`=:type, description=:description WHERE ID=:id;");
             $statementObj->bindValue(':id', $id, PDO::PARAM_INT);
             $statementObj->bindValue(':type', $this->type, PDO::PARAM_STR);
             $statementObj->bindValue(':description', $this->description, PDO::PARAM_STR);

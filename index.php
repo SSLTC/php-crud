@@ -43,7 +43,7 @@ switch ($action) {
     case 'showForm':
         showForm();
         break;
-    case 'filte':
+    case 'filter':
         filter();
         break;
     default:
@@ -53,15 +53,15 @@ switch ($action) {
 
 function filter()
 {
-
+    overview($_GET['filter']);
 }
 
-function overview()
+function overview($filter = null)
 {
     // Load your view
     // Tip: you can load this dynamically and based on a variable, if you want to load another view
     $showFormAddCard = false;
-    $cards = $GLOBALS['cardRepository']->get();
+    $cards = $GLOBALS['cardRepository']->get($filter);
     require 'overview.php';
 }
 

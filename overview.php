@@ -37,15 +37,14 @@
     <?php endif;?>
 
     <?php if (isset($cards)):?>
-    <?php
-    $htmlEle = '<input type="text" id="filter" placeholder="filter" value="test">';
-    $domdoc = new DOMDocument();
-    $domdoc->loadHTML($htmlEle);
-    echo $domdoc->getElementById('filter')->nodeValue;
-    echo $domdoc->saveHTML();
-    echo $domdoc->getElementById('filter')->nodeValue;
-    ?>
-    <a href="?action=filter&value=<?= $domdoc->getElementById('filter')->nodeValue; ?>"><button class="btn btn-primary">Filter</button></a>
+
+    <form method="get" action="index.php">
+        <div class="form-row mb-2 ml-1">
+            <input type="hidden" name="action" value="filter">
+            <input type="text" name="filter" placeholder="Filter">&nbsp;
+            <input type="submit" class="btn btn-primary" value="Filter">
+        </div>
+    </form>
 
     <ol class="list-group list-group-numbered">
         <?php foreach ($cards as $card) : ?>  
