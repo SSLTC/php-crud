@@ -57,7 +57,7 @@ class CardRepository
         // TODO: replace dummy data by real one
 
         // We get the database connection first, so we can apply our queries with it
-        $statementObj = $this->databaseManager->connection->prepare(('SELECT * FROM cards'));
+        $statementObj = $this->databaseManager->connection->prepare(('SELECT * FROM cards WHERE deleted = 0'));
         $statementObj->execute();
 
         $statementObj->setFetchMode(PDO::FETCH_ASSOC);
@@ -88,4 +88,14 @@ class CardRepository
         }
     }
 
+    public function softDelete(int $id): void
+    {
+        try {
+            $statementObj = $this->databaseManager->connection->prepare(("UPDATE cards SET Deleted=1 WHERE ID=:id;"));
+            $statementObj->bindValue(':id', $id, PDO::PARAM_INT);
+            $statementObj->execute();
+        } catch(PDOException $e) {
+            echo "Delete failed: " . $e->getMessage();
+        }
+    }
 }

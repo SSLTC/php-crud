@@ -20,13 +20,13 @@
     <div class="form-row">
     <div class="form-group col-md-6">
         <label for="type">Type: </label>
-        <input type="text" name="type" id="type" class="form-control">
+        <input type="text" name="type" id="type" class="form-control" required>
     </div>
     </div>
     <div class="form-row">
     <div class="form-group col-md-6">
         <label for="description">Description: </label>
-        <textarea id="description" name="description" class="form-control"></textarea>
+        <textarea id="description" name="description" class="form-control" required></textarea>
         </div>
     </div>
     </fieldset>
@@ -36,8 +36,19 @@
 
     <?php endif;?>
 
+    <?php if (isset($cards)):?>
+    <?php
+    $htmlEle = '<input type="text" id="filter" placeholder="filter" value="test">';
+    $domdoc = new DOMDocument();
+    $domdoc->loadHTML($htmlEle);
+    echo $domdoc->getElementById('filter')->nodeValue;
+    echo $domdoc->saveHTML();
+    echo $domdoc->getElementById('filter')->nodeValue;
+    ?>
+    <a href="?action=filter&value=<?= $domdoc->getElementById('filter')->nodeValue; ?>"><button class="btn btn-primary">Filter</button></a>
+
     <ol class="list-group list-group-numbered">
-        <?php if (isset($cards)) { foreach ($cards as $card) : ?>        
+        <?php foreach ($cards as $card) : ?>  
         <li class="list-group-item d-flex justify-content-between align-items-start">
             <div class="ms-2 me-auto">
             <div class="fw-bold"><?= htmlspecialchars($card['type']) ?> </div>
@@ -49,8 +60,9 @@
             <a href="?action=delete&id=<?= $card['ID'] ?>"><button class="btn btn-primary">Delete</button></a>
             </div>
         </li>
-        <?php endforeach; } ?>
+        <?php endforeach; ?>
     </ol>
+    <?php endif;?>
     </div>
 </body>
 </html>
