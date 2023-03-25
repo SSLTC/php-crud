@@ -3,7 +3,7 @@
 // This class is focussed on dealing with queries for one type of data
 // That allows for easier re-using and it's rather easy to find all your queries
 // This technique is called the repository pattern
-class CardRepository
+class CardController
 {
     private DatabaseManager $databaseManager;
     private string $type;
@@ -25,8 +25,11 @@ class CardRepository
         $this->databaseManager = $databaseManager;
     }
 
-    public function create(): void
+    public function create(string $type, string $description): void
     {
+        $this->type = $type;
+        $this->description = $description;
+
         try {
             $statementObj = $this->databaseManager->connection->prepare("INSERT INTO cards (`type`, description) VALUES (:type, :description)");
             $statementObj->bindValue(':type', $this->type);
@@ -35,6 +38,8 @@ class CardRepository
         } catch(PDOException $e) {
             echo "Insert failed: " . $e->getMessage();
         }
+        
+        header('Location: .');
     }
 
     // Get one
@@ -71,14 +76,32 @@ class CardRepository
 
     public function update(int $id): void
     {
-        try {
-            $statementObj = $this->databaseManager->connection->prepare("UPDATE cards SET `type`=:type, description=:description WHERE ID=:id;");
-            $statementObj->bindValue(':id', $id, PDO::PARAM_INT);
-            $statementObj->bindValue(':type', $this->type, PDO::PARAM_STR);
-            $statementObj->bindValue(':description', $this->description, PDO::PARAM_STR);
-            $statementObj->execute();
-        } catch(PDOException $e) {
-            echo "Update failed: " . $e->getMessage();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!empty($_FILES["fileToUpload"]["name"])) {
+                require 'uploads/upload.php';
+
+                if (!empty($errors)) {
+                    require 'View/edit.php';
+                    exit;
+                }
+            }
+
+            $this->type = $_POST['type'];
+            $this->description = $_POST['description'];
+            
+            try {
+                $statementObj = $this->databaseManager->connection->prepare("UPDATE cards SET `type`=:type, description=:description WHERE ID=:id;");
+                $statementObj->bindValue(':id', $id, PDO::PARAM_INT);
+                $statementObj->bindValue(':type', $this->type, PDO::PARAM_STR);
+                $statementObj->bindValue(':description', $this->description, PDO::PARAM_STR);
+                $statementObj->execute();
+            } catch(PDOException $e) {
+                echo "Update failed: " . $e->getMessage();
+            }
+            header('Location: .');
+        } else {
+            $card = $this->find($id);
+            require 'View/edit.php';
         }
     }
 
@@ -91,6 +114,7 @@ class CardRepository
         } catch(PDOException $e) {
             echo "Delete failed: " . $e->getMessage();
         }
+        header('Location:.');
     }
 
     public function softDelete(int $id): void
@@ -102,5 +126,6 @@ class CardRepository
         } catch(PDOException $e) {
             echo "Delete failed: " . $e->getMessage();
         }
+        header('Location:.');
     }
 }

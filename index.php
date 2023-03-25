@@ -11,7 +11,9 @@ error_reporting(E_ALL);
 // Load you classes
 require_once 'config.php';
 require_once 'classes/DatabaseManager.php';
-require_once 'classes/CardRepository.php';
+
+require_once 'Controller/CardController.php';
+require_once 'Controller/HomepageController.php';
 
 if (isset($_POST['cancel'])) { 
     header('Location: .');
@@ -21,9 +23,6 @@ if (isset($_POST['cancel'])) {
 $databaseManager = new DatabaseManager($config['host'], $config['user'], $config['password'], $config['dbname']);
 $databaseManager->connect();
 
-$cardRepository = new CardRepository($databaseManager);
-//$cards = $cardRepository->get();
-
 // Get the current action to execute
 // If nothing is specified, it will remain empty (home should be loaded)
 $action = $_GET['action'] ?? null;
@@ -32,82 +31,21 @@ $action = $_GET['action'] ?? null;
 // This system will help you to only execute the code you want, instead of all of it (or complex if statements)
 switch ($action) {
     case 'create':
-        create();
+        (new CardController($databaseManager))->create($_POST['type'], $_POST['description']);
         break;
     case 'update':
-        update();
+        (new CardController($databaseManager))->update((int)$_GET['id']);
         break;
     case 'delete':
-        delete();
+        (new CardController($databaseManager))->delete((int)$_GET['id']);
         break;
     case 'showForm':
-        showForm();
+        (new HomepageController($databaseManager))->showForm();
         break;
     case 'filter':
-        filter();
+        (new HomepageController($databaseManager))->overview($_GET['filter']);
         break;
     default:
-        overview();
+        (new HomepageController($databaseManager))->overview();
         break;
-}
-
-function filter()
-{
-    overview($_GET['filter']);
-}
-
-function overview($filter = null)
-{
-    // Load your view
-    // Tip: you can load this dynamically and based on a variable, if you want to load another view
-    $showFormAddCard = false;
-    $cards = $GLOBALS['cardRepository']->get($filter);
-    require 'overview.php';
-}
-
-function create()
-{
-    // TODO: provide the create logic
-    global $cardRepository;
-    $cardRepository->setType($_POST['type']);
-    $cardRepository->setDescription($_POST['description']);
-    $cardRepository->create();
-    header('Location: .');
-}
-
-function update()
-{
-    // TODO: provide the update logic
-    global $cardRepository;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (!empty($_FILES["fileToUpload"]["name"])) {
-            require './uploads/upload.php';
-
-            if (!empty($errors)) {
-                require 'edit.php';
-                exit;
-            }
-        }
-
-        $cardRepository->setType($_POST['type']);
-        $cardRepository->setDescription($_POST['description']);
-        $cardRepository->update((int)$_GET['id']);
-        header('Location: .');
-    } else {
-        $card = $cardRepository->find((int)$_GET['id']);
-        require 'edit.php';
-    }
-}
-
-function delete()
-{
-    global $cardRepository;
-    $cardRepository->delete((int)$_GET['id']);
-    header('Location:.');
-}
-
-function showForm()
-{
-    $showFormAddCard = true;
-    require 'overview.php';
 }
