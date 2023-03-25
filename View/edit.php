@@ -6,12 +6,12 @@
 
     <?= '<p class="text-danger">', !empty($errors)? implode("<br>", $errors) : '', '</p>' ?>
 
-    <form method="post" enctype="multipart/form-data" action="index.php?action=update&id=<?= $card['ID']??$_GET['id'] ?>">
+    <form method="post" enctype="multipart/form-data" action="index.php?action=update&id=<?= $card->getID()??$_GET['id'] ?>">
     <fieldset>
     <div class="form-row">
     <div class="form-group col-md-6">
         <label for="type">Type: </label>
-        <input type="text" name="type" id="type" class="form-control" required value="<?= htmlspecialchars($card['type']??$_POST['type']) ?>">
+        <input type="text" name="type" id="type" class="form-control" required value="<?= htmlspecialchars($card->getType()??$_POST['type']) ?>">
     </div>
     </div>
     <div class="form-row">
@@ -28,7 +28,7 @@
     <div class="form-row">
     <div class="form-group col-md-6">
         <label for="description">Description: </label>
-        <textarea id="description" name="description" class="form-control" required><?= htmlspecialchars($card['description']??$_POST['description']) ?></textarea>
+        <textarea id="description" name="description" class="form-control" required><?= htmlspecialchars($card->getDescription()??$_POST['description']) ?></textarea>
     </div>
     </div>
     </fieldset>

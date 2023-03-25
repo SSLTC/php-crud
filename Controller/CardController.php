@@ -1,23 +1,12 @@
 <?php
 
+require_once 'Model/Card.php';
 // This class is focussed on dealing with queries for one type of data
 // That allows for easier re-using and it's rather easy to find all your queries
 // This technique is called the repository pattern
-class CardController
+class CardController extends Card
 {
     private DatabaseManager $databaseManager;
-    private string $type;
-    private string $description;
-
-    public function setType(string $type): void
-    {
-        $this->type = $type;
-    }
-
-    public function setDescription(string $description): void
-    {
-        $this->description = $description;
-    }
 
     // This class needs a database connection to function
     public function __construct(DatabaseManager $databaseManager)
@@ -43,13 +32,13 @@ class CardController
     }
 
     // Get one
-    public function find(int $id): array
+    public function find(int $id): Card
     {
         $statementObj = $this->databaseManager->connection->prepare("SELECT * FROM cards WHERE ID =:id");
         $statementObj->bindValue(':id', $id, PDO::PARAM_INT);
         $statementObj->execute();
 
-        $statementObj->setFetchMode(PDO::FETCH_ASSOC);
+        $statementObj->setFetchMode(PDO::FETCH_CLASS, 'Card');
         return $statementObj->fetch();
     }
 
@@ -70,7 +59,7 @@ class CardController
         $statementObj = $this->databaseManager->connection->prepare($query);
         $statementObj->execute();
 
-        $statementObj->setFetchMode(PDO::FETCH_ASSOC);
+        $statementObj->setFetchMode(PDO::FETCH_CLASS, 'Card');
         return $statementObj->fetchAll();
     }
 

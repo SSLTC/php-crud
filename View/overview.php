@@ -41,13 +41,13 @@
         <?php foreach ($cards as $card) : ?>  
         <li class="list-group-item d-flex justify-content-between align-items-start">
             <div class="ms-2 me-auto">
-            <div class="fw-bold"><?= htmlspecialchars($card['type']) ?> </div>
-            <?= htmlspecialchars($card['description']) ?>
+            <div class="fw-bold"><?= htmlspecialchars($card->getType()) ?> </div>
+            <?= htmlspecialchars($card->getDescription()) ?>
             </div>
             <div class="ms-2 me-auto">
             <a href="?action=showForm"><button class="btn btn-primary">Add</button></a>
-            <a href="?action=update&id=<?= $card['ID'] ?>"><button class="btn btn-primary">Update</button></a>
-            <a href="?action=delete&id=<?= $card['ID'] ?>"><button class="btn btn-primary">Delete</button></a>
+            <a href="?action=update&id=<?= $card->getID() ?>"><button class="btn btn-primary">Update</button></a>
+            <a href="?action=delete&id=<?= $card->getID() ?>"><button class="btn btn-primary">Delete</button></a>
             </div>
         </li>
         <?php endforeach; ?>
